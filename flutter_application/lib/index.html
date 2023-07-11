@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <title>Connect to Crypto Wallet</title>
+      <style>
+         body {
+            background-color: #f5f5f5;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+         }
+         .container {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+         }
+         h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #4CAF50;
+         }
+         input[type="button"] {
+            padding: 12px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: #ffffff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+         }
+         input[type="button"]:hover {
+            background-color: #45a049;
+         }
+         #walletAddress,
+         #username {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 18px;
+            color: #555555;
+         }
+      </style>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.7.4-rc.1/web3.min.js"></script>
+   </head>
+   <body>
+      <div class="container">
+         <h1>Connect to Crypto Wallet</h1>
+         <input type="button" value="Connect Wallet" onclick="connect();">
+         <div id="walletAddress"></div>
+         <div id="username"></div>
+         <input type="button" value="Change Username" onclick="changeUsername();">
+      </div>
+
+      <script>
+         /* To connect using MetaMask */
+         async function connect() {
+            if (window.ethereum) {
+               await window.ethereum.request({ method: "eth_requestAccounts" });
+               window.web3 = new Web3(window.ethereum);
+               const account = web3.eth.accounts;
+               // Get the current MetaMask selected/active wallet
+               const walletAddress = account.givenProvider.selectedAddress;
+               console.log(`Wallet: ${walletAddress}`);
+               // Retrieve the username from local storage
+               const storedUsername = localStorage.getItem(walletAddress);
+               // If the username is already stored, display it
+               if (storedUsername) {
+                  document.getElementById("username").innerText = `Username: ${storedUsername}`;
+               }
+               // If the username is not stored, prompt the user to enter a new username
+               else {
+                  const username = prompt("Enter your username");
+                  // Store the username and wallet address in local storage
+                  localStorage.setItem(walletAddress, username);
+                  // Display the wallet address and username on the web page
+                  document.getElementById("walletAddress").innerText = `Wallet Address: ${walletAddress}`;
+                  document.getElementById("username").innerText = `Username: ${username}`;
+               }
+            } else {
+               console.log("No wallet");
+            }
+         }
+
+         /* To retrieve username from local storage */
+         function retrieveUsername(walletAddress) {
+            const username = localStorage.getItem(walletAddress);
+            if (username) {
+               document.getElementById("username").innerText = `Username: ${username}`;
+            }
+         }
+
+         // Function to change the username
+         function changeUsername() {
+            const walletAddress = web3.eth.accounts.givenProvider.selectedAddress;
+            const currentUsername = localStorage.getItem(walletAddress);
+            const newUsername = prompt("Enter your new username", currentUsername);
+            localStorage.setItem(walletAddress, newUsername);
+            document.getElementById("username").innerText = `Username: ${newUsername}`;
+         }
+      </script>
+      <script>
+         // Retrieve the username on page load if the wallet is already connected
+         if (window.ethereum && window.ethereum.selectedAddress) {
+            retrieveUsername(window.ethereum.selectedAddress);
+         }
+      </script>
+   </body>
+</html>
