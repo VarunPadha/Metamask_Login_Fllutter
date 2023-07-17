@@ -1,4 +1,4 @@
-# Metamask_Login_Fllutter
+# Metamask_Login_Flutter
 This is a repo example of a flutter dart extension to connect to Metamask wallet through flutter web 
 
 
